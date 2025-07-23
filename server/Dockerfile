@@ -18,4 +18,8 @@ RUN chmod +x /ana-demo/entrypoint.sh
 
 COPY . .
 
+WORKDIR /ana-demo/core/graphiti
+RUN pip install -e .
+WORKDIR /ana-demo
+
 ENTRYPOINT ["/ana-demo/entrypoint.sh"]

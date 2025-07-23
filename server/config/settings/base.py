@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     "corsheaders",
     # Local apps
     "chat",
-    "core",
+    "core"
 ]
 
 MIDDLEWARE = [
@@ -167,75 +167,19 @@ CHANNEL_LAYERS = {
 }
 
 
-# ANA Core config
-LLAMA_API_URL = config("LLAMA_API_URL")
 
 # NEO4J config
 NEO4J_USER = config("NEO4J_USER")
-NEO4J_PASS = config("NEO4J_PASS")
-NEO4J_URL = config("NEO4J_BACKEND")
+NEO4J_PASSWORD = config("NEO4J_PASSWORD")
+NEO4J_URI = config("NEO4J_URI")
 
-# Prompts
-FUNCTIONALITY_CLF_PROMPT_PATH = os.path.join(
-    BASE_DIR, r"core/static/prompts/v1/functionality_template.txt"
-)
-GREETING_PROMPT = os.path.join(BASE_DIR, r"core/static/prompts/v1/greet_template.txt")
-INTENT_PROMPT_PATH = os.path.join(
-    BASE_DIR, r"core/static/prompts/v1/intent_template.txt"
-)
-CONTEXT_PROMPT_PATH = os.path.join(
-    BASE_DIR, r"core/static/prompts/v1/context_extraction_template.txt"
-)
-QUESTION_CATEGORIZATION_PROMPT_PATH = os.path.join(
-    BASE_DIR, r"core/static/prompts/v1/question_categories_template.txt"
-)
-WEATHER_PROMPT_PATH = os.path.join(
-    BASE_DIR, r"core/static/prompts/v1/weather_template.txt"
-)
-BOOK_NAME_PROMPT_PATH = os.path.join(
-    BASE_DIR, r"core/static/prompts/v1/book_details_template.txt"
-)
-CREATE_JOKE_PROMPT_PATH = os.path.join(
-    BASE_DIR, r"core/static/prompts/v1/joke_prompt.txt"
-)
-OTHER_INQUIRY_PROMPT_PATH = os.path.join(
-    BASE_DIR, r"core/static/prompts/v1/other_inquiry_template.txt"
-)
-TIMING_REQ_PROMPT_PATH = os.path.join(
-    BASE_DIR, r"core/static/prompts/v1/timing_request_categories_template.txt"
-)
+# Agent Config
+LLM_MODEL_NAME=config("LLM_MODEL_NAME")
+EMBEDDER_MODEL_NAME=config("EMBEDDER_MODEL_NAME")
 
-BOOKS_ROOT_DIR = r"core/static/books"
-# Instructions
-EVENT_EXTRACTION_INSTRUCTION_PATH = os.path.join(
-    BASE_DIR, r"core/static/instructions/event_extraction.txt"
-)
+OPENAI_BASE_URL=config("OPENAI_BASE_URL")
+OPENAI_BASE_URL_EMBEDDING=config("OPENAI_BASE_URL_EMBEDDING")
+OPENAI_API_KEY=config("OPENAI_API_KEY")
 
-# Responses
-HELP_RESPONSE_PATH = os.path.join(BASE_DIR, r"core/static/responses/help_response.txt")
-
-CALENDAR_CREDS_PATH = os.path.join(BASE_DIR, r"core/static/credentials.json")
-TEMP_TOKEN_PATH = os.path.join(BASE_DIR, r"core/static/token.pkl")
-
-# Union of prompts
-V1_PROMPTS = [
-    FUNCTIONALITY_CLF_PROMPT_PATH,
-    GREETING_PROMPT,
-    INTENT_PROMPT_PATH,
-    CONTEXT_PROMPT_PATH,
-    QUESTION_CATEGORIZATION_PROMPT_PATH,
-    WEATHER_PROMPT_PATH,
-    BOOK_NAME_PROMPT_PATH,
-    CREATE_JOKE_PROMPT_PATH,
-    OTHER_INQUIRY_PROMPT_PATH,
-    TIMING_REQ_PROMPT_PATH,
-]
-
-V2_PROMPTS = [
-    "core/static/prompts/v2/ana_v2_answer.txt",
-    "core/static/prompts/v2/ana_v2_ask.txt",
-    "core/static/prompts/v2/ana_v2_functions.txt",
-    "core/static/prompts/v2/ana_v2_book_verify.txt",
-    "core/static/prompts/v2/ana_v2_ner.txt",
-    "core/static/prompts/v2/ana_v2_information.txt",
-]
+FUNCTION_CALLS_PROMPT_PATH=os.path.join(BASE_DIR, r"core/static/prompts/function_prompt.txt")
+REPLY_PROMPT_PATH=os.path.join(BASE_DIR, r"core/static/prompts/messages_prompt.txt")
