@@ -6,21 +6,21 @@ import './Register.css'; // Import local styles
 const Register = () => {
     const [formData, setFormData] = useState({
         username: '',
-        password: ''
+        password: '',
+        name: '',
+        age: '',
+        city: ''
     });
     const [error, setError] = useState('');
 
     const navigate = useNavigate();
-    const { username, password } = formData;
+    const { username, password, name, age, city } = formData;
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const onSubmit = async e => {
         e.preventDefault();
-        const newUser = {
-            username,
-            password
-        };
+        const newUser = { username, password, name, age, city };
         try {
             const res = await axios.post(`${process.env.REACT_APP_HTTP_HOST}/users/register/`, newUser);
             console.log(res.data);
@@ -43,6 +43,30 @@ const Register = () => {
             <h1>Register</h1>
             {error && <p className="error">{error}</p>} {/* Display error message */}
             <form onSubmit={onSubmit}>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="First Name"
+                    value={name}
+                    onChange={onChange}
+                    required
+                />
+                <input
+                    type="number"
+                    name="age"
+                    placeholder="Age"
+                    value={age}
+                    onChange={onChange}
+                    required
+                />
+                <input
+                    type="text"
+                    name="city"
+                    placeholder="City"
+                    value={city}
+                    onChange={onChange}
+                    required
+                />
                 <input
                     type="username"
                     name="username"
