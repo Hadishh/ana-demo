@@ -9,7 +9,9 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     username = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
-
+    name = models.CharField(max_length=255, null=False)
+    age = models.PositiveSmallIntegerField(null=False)
+    city = models.CharField(max_length=255)
     USERNAME_FIELD = 'username' # login w/ email, unique identifier.
-    REQUIRED_FIELDS = [] 
+    REQUIRED_FIELDS = ["name", "age", "city"] 
     #has no effect in admin ui, it is list of the field names that will be prompted for when creating a user via the createsuperuser 

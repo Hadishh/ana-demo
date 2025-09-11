@@ -12,6 +12,9 @@ class RegisterView(APIView):
     def post(self, request, *args, **kwargs):
         password = request.data.get("password")
         username = request.data.get("username")
+        name = request.data.get("name")
+        age = request.data.get("age")
+        city = request.data.get("city")
         if not password or not username:
             return Response(
                 {"error": "Please provide username, password"},
@@ -21,7 +24,13 @@ class RegisterView(APIView):
             return Response(
                 {"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST
             )
-        user = User.objects.create_user(username=username, password=password)
+        user = User.objects.create_user(
+            username=username, 
+            password=password,
+            name=name,
+            age=age,
+            city=city
+        )
         refresh = RefreshToken.for_user(user)
 
         return Response(
