@@ -5,7 +5,7 @@ from langchain_core.utils.function_calling import convert_to_openai_function
 from datetime import datetime
 
 @tool
-def get_weather(city_name: str, datetime: datetime):
+async def get_weather(city_name: str, datetime: datetime):
     """
     Gets the weather information in a city of a given date and time.
     

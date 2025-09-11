@@ -2,6 +2,7 @@ import os
 import pytz
 import re
 from datetime import datetime
+import asyncio
 
 from chat.models import Message
 
@@ -21,11 +22,11 @@ class ChatBot:
             funcs_ref=functions_references
         )
 
-        response = main_agent.generate_functions_and_responses(
+        response = asyncio.run(main_agent.generate_functions_and_responses(
             tool_registry=tool_map, 
             action_registry={"function_registry": {}}, 
             persona=None, 
             dialogue=None, 
-            executor=curr_exec)
+            executor=curr_exec))
 
         return response, "other"

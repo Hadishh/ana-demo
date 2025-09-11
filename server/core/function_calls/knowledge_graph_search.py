@@ -1,9 +1,9 @@
 
 from langchain.tools import tool
 from langchain_core.utils.function_calling import convert_to_openai_function
-
+from core.agents import graphiti_agent
 @tool
-def graph_search(query):
+async def graph_search(query):
     """
     Searches a personalized knowledge graph for information related to the user's personal relationships,
     daily life, and specific events or entities within their personal context. This function leverages
@@ -27,7 +27,15 @@ def graph_search(query):
         the personalized knowledge graph. If the information is not found, a suitable
         message indicating that will be returned.
     """
-    return f"GRAPH"
+    print("CALLLING GRAPH SEARCH: ", query)
+    edges = await graphiti_agent.graphiti.search(query)
+    fine_grained_facts = []
+    for edge in edges:
+        if edge.name == "IS_DUPLICATE_OF":
+            continue
+        fine_grained_facts.append(edge.fact)
+    
+    return "\n".join(fine_grained_facts)
 
 func_references = {"graph_search": graph_search}
 

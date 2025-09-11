@@ -23,7 +23,7 @@ class DeepSeekAgent(Agent):
         self.MAX_NEW_TOKENS = 16384
         self.temperature= 0.6
     
-    def generate_functions_and_responses(self, tool_registry, action_registry, persona, dialogue, executor):
+    async def generate_functions_and_responses(self, tool_registry, action_registry, persona, dialogue, executor):
         functions = self._create_message_for_functions(tool_registry, action_registry, dialogue, persona)
         res = self.llm_client.completions.create(
             model=self.model_name,
@@ -58,7 +58,7 @@ class DeepSeekAgent(Agent):
         if "name" in res_item:
             final_functions.append(res_item)
 
-        function_results = executor.execute(final_functions)
+        function_results = await executor.execute(final_functions)
 
         dialogue_prompt = self._create_dialogue_message(persona, dialogue, function_results)
         response = self.llm_client.completions.create(

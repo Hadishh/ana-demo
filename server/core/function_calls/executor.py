@@ -22,7 +22,7 @@ class Executor:
         self.threshold = 0.4
         # This is a temporary value. The value may be subject to change by the organizers. 
     
-    def execute(self, function_list): 
+    async def execute(self, function_list): 
         """
             Execute the list of functions by checking the gold functions.
             It will also record the function call names and args (for evaluation purposes). 
@@ -35,7 +35,9 @@ class Executor:
             args = {k.strip(): v.strip() for k, v in func_item["parameters"].items()}
 
             if name in self.funcs_ref:
-                func_output = self.funcs_ref[name].func(**args)
+                print("Calling: ", name)
+                print(self.funcs_ref)
+                func_output = await self.funcs_ref[name].coroutine(**args)
                 results[f"{name}({args})"] = {"name": name, "output": func_output}
             
         return results
