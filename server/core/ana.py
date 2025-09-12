@@ -25,7 +25,7 @@ class ChatBot:
         dialogue = Message.objects.filter(owner=self.user).order_by("-date")[:10]
         
         dialogue = [
-            {"id": utterance.id, "text": utterance.text} for utterance in dialogue
+            {"id": utterance.id, "text": utterance.text[:512]} for utterance in dialogue
         ]
         dialogue.insert(0, {"id": -1, "text": message["text"]})
         print(dialogue)
