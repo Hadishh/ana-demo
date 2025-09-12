@@ -11,6 +11,7 @@ class ChatBot:
     def __init__(self, user) -> None:
         self.user = user
         self.debug_report = str()
+        self.persona = f"User's Name: {user.name}\nUser's Age: {user.age}\nUser's City: {user.city}\nCurrent time:{str(datetime.now())}"
 
 
     def answer(self, message):
@@ -21,12 +22,18 @@ class ChatBot:
             action_registry={"function_registry": {}}, 
             funcs_ref=functions_references
         )
-
+        dialogue = Message.objects.filter(owner=self.user).order_by("-date")[:10]
+        
+        dialogue = [
+            {"id": utterance.id, "text": utterance.text} for utterance in dialogue
+        ]
+        dialogue.insert(0, {"id": -1, "text": message["text"]})
+        print(dialogue)
         response = asyncio.run(main_agent.generate_functions_and_responses(
             tool_registry=tool_map, 
             action_registry={"function_registry": {}}, 
-            persona=None, 
-            dialogue=None, 
+            persona=self.persona, 
+            dialogue=dialogue, 
             executor=curr_exec))
 
         return response, "other"

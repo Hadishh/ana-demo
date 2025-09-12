@@ -72,7 +72,7 @@ class DeepSeekAgent(Agent):
 
         return response.strip()
 
-    def _create_message_for_functions(self, tool_functions, action_functions, dialogue, context):
+    def _create_message_for_functions(self, tool_functions, action_functions, dialogue, user_info):
         prompt = read_file(FUNCTION_CALLS_PROMPT_PATH)
 
         # Prepare function information by concatenating all function names and docstrings. 
@@ -92,30 +92,17 @@ class DeepSeekAgent(Agent):
             ).format(action_['name'], action_['description'])
             function_information.append(action_prompt)
         function_information_agg = '\n'.join(function_information)
-
-        # history = dialogue[-11:]
-
-        context = f"User's Name: Hadi\nUser's Age: 26\nUser's City: Edmonton\nCurrent time:{str(datetime.now())}"
-        history = [
-            {"id": 1, "text": "Hi ANA!"},
-            {"id": 1, "text": "Hi Hadi how are you today?"},
-            {"id": 1, "text": "My neighbor is coming for a visit!"},
-        ]
-        input_text = history[-1]["text"]
+        
+        input_text = dialogue[0]["text"] # sorted from new to old
 
         prompt = prompt.replace("{functions}", function_information_agg) \
-                        .replace("{context}", context) \
-                        .replace("{history}", "\n".join([h["text"] for h in history]))
+                        .replace("{context}", user_info) \
+                        .replace("{history}", "\n".join([h["text"] for h in dialogue]))
         
         return prompt
     
-    def _create_dialogue_message(self, context, history, function_results):
-        context = f"User's Name: Hadi\nUser's Age: 26\nUser's City: Edmonton\nCurrent time:{str(datetime.now())}"
-        history = [
-            {"id": 1, "text": "Hi ANA!"},
-            {"id": 1, "text": "Hi Hadi how are you today?"},
-            {"id": 1, "text": "good, planning for a walk, how is the weather today?"},
-        ]
+    def _create_dialogue_message(self, user_info, history, function_results):
+        
         prompt = read_file(REPLY_PROMPT_PATH)
 
         funciton_outputs = ""
@@ -124,7 +111,7 @@ class DeepSeekAgent(Agent):
             funciton_outputs = funciton_outputs + f"Function {result['name']} Output:\n{result['output']}\n"
         
         prompt = prompt.replace("{external_kg}", funciton_outputs) \
-                        .replace("{user_info}", context) \
+                        .replace("{user_info}", user_info) \
                         .replace("{history}", "\n".join([h["text"] for h in history]))
 
         return prompt

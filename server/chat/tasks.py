@@ -13,7 +13,6 @@ channel_layer = get_channel_layer()
 def get_response(channel_name, input_data, user):
     chatbot = ChatBot(user=user)
     answer, type_ = chatbot.answer(input_data)
-    print("GAAV", type_)
     new_message = Message.objects.create(
         owner=user, text=input_data["text"], source="user", type=type_
     )
