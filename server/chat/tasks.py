@@ -12,7 +12,13 @@ channel_layer = get_channel_layer()
 @shared_task
 def get_response(channel_name, input_data, user):
     chatbot = ChatBot(user=user)
-    answer, type_ = chatbot.answer(input_data)
+    dialogue = Message.objects.filter(owner=user).order_by("-date")[:10]
+    dialogue = [
+        {"id": utterance.id, "text": utterance.text[:512]} for utterance in dialogue
+    ]
+    dialogue.insert(0, {"id": -1, "text": input_data["text"]})
+
+    answer, type_ = async_to_sync(chatbot.answer)(dialogue)
     new_message = Message.objects.create(
         owner=user, text=input_data["text"], source="user", type=type_
     )

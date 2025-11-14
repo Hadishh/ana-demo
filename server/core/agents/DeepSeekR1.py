@@ -24,6 +24,7 @@ class DeepSeekAgent(Agent):
         self.temperature= 0.6
     
     async def generate_functions_and_responses(self, tool_registry, action_registry, persona, dialogue, executor):
+        log_string = str()
         functions = self._create_message_for_functions(tool_registry, action_registry, dialogue, persona)
         res = self.llm_client.completions.create(
             model=self.model_name,
@@ -59,7 +60,16 @@ class DeepSeekAgent(Agent):
             final_functions.append(res_item)
 
         function_results = await executor.execute(final_functions)
+        log_string = "Calling Functions:"
 
+        for item in function_results:
+            output = function_results[item]["output"]
+            log_string += f'\n{item}\nOutput:\n{output}'
+        
+        log_string += "\n==================End of Functions========================="
+
+        log_string += f"\nPersonal Information:\n{persona}"
+        log_string += "\n==================End of Personal Information=============="
         dialogue_prompt = self._create_dialogue_message(persona, dialogue, function_results)
         response = self.llm_client.completions.create(
             model=self.model_name,
@@ -70,7 +80,7 @@ class DeepSeekAgent(Agent):
 
         response = response.choices[0].text.split("</think>")[-1]
 
-        return response.strip()
+        return response.strip(), log_string
 
     def _create_message_for_functions(self, tool_functions, action_functions, dialogue, user_info):
         prompt = read_file(FUNCTION_CALLS_PROMPT_PATH)
