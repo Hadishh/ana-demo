@@ -1,11 +1,12 @@
 services:
   webapp:
-    build: .
-    #
+    build:
+      context: ./web
+      dockerfile: Dockerfile
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
     volumes:
-      - .:/ana-demo
+      - ./web:/ana-demo
     env_file:
       - ./.env
     ports:
@@ -34,17 +35,78 @@ services:
       - 6379:6379
 
   celery:
-    build: .
+    build:
+      context: ./web
+      dockerfile: Dockerfile
     command: celery -A config worker -l info
     # network_mode: host
     volumes:
-      - .:/code
+      - ./web:/code
     env_file:
       - ./.env
     depends_on:
       - db
       - redis
       - webapp
+  
+  vllm-llm:
+    build:
+      context: ./vllm_container
+      dockerfile: Dockerfile  # or Dockerfile.server if you prefer
+    image: vllm-container:latest
+    shm_size: 1gb
+    entrypoint: ["/bin/bash", "-c", "/workspace/vllm_llm.sh"]
+    volumes:
+      - deepseek_model:/models/DeepSeek:ro
+    gpus: "all"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0,1
+    env_file:
+      - ./.env
+    ports:
+      - "25601:25601"
+  
+  vllm-embed:
+    build:
+      context: ./vllm_container
+      dockerfile: Dockerfile  
+    image: vllm-container:latest
+    shm_size: 1gb
+    entrypoint: ["/bin/bash", "-c", "/workspace/vllm_embedding.sh"]
+    volumes:
+      - e5_model:/models/e5-large-v2:ro
+    gpus: "all"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=1
+    env_file:
+      - ./.env
+    ports:
+      - "25602:25602"
+  
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j_data:/data
+    environment:
+      - NEO4J_AUTH=${NEO4J_USERNAME}/${NEO4J_PASSWORD} 
 
 volumes:
   postgres_data:
+  neo4j_data:
+
+  deepseek_model:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/ubuntu/Desktop/LMs/DeepSeek-R1-32B
+      o: bind
+  e5_model:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/ubuntu/Desktop/LMs/e5-large-v2
+      o: bind
