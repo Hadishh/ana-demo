@@ -60,7 +60,7 @@ services:
       - deepseek_model:/models/DeepSeek:ro
     gpus: "all"
     environment:
-      - NVIDIA_VISIBLE_DEVICES=0,1
+      - CUDA_VISIBLE_DEVICES=2,3
     env_file:
       - ./.env
     ports:
@@ -77,7 +77,7 @@ services:
       - e5_model:/models/e5-large-v2:ro
     gpus: "all"
     environment:
-      - NVIDIA_VISIBLE_DEVICES=1
+      - CUDA_VISIBLE_DEVICES=7
     env_file:
       - ./.env
     ports:
@@ -102,11 +102,11 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /home/ubuntu/Desktop/LMs/DeepSeek-R1-32B
+      device: /local/ssd2/hadish/DeepSeek-R1-Qwen-2.5-32B
       o: bind
   e5_model:
     driver: local
     driver_opts:
       type: none
-      device: /home/ubuntu/Desktop/LMs/e5-large-v2
+      device: /local/ssd2/hadish/e5-large-v2
       o: bind
