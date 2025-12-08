@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 echo $OPENAI_API_KEY
-echo "import triton, sys; print(triton.__version__)" | python
 
 # now every variable in .env is in your environment
 CUDA_VISIBLE_DEVICES=0,1 vllm serve $LLM_PATH --served-model-name $LLM_MODEL_NAME \
