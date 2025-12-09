@@ -89,6 +89,9 @@ const Chat = () => {
     navigate('/login'); // Redirect to login page after logout
   };
 
+  const handleGraphView = () => {
+    navigate("/graph");
+  }
   const toggleDebugBox = () => {
     setShowDebug(!showDebug);
   };
@@ -102,6 +105,7 @@ const Chat = () => {
           <h1>🤖 ANA-Assistant 🤖</h1>
         </div>
         <div className="header-buttons">
+          <button onClick={handleGraphView} className="logout-button">View Graph</button>
           <button onClick={toggleDebugBox} className="toggle-debug-button">
             {showDebug ? 'Hide Debug' : 'Show Debug'}
           </button>
