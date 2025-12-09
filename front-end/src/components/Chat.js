@@ -13,8 +13,6 @@ const Chat = () => {
   const [showDebug, setShowDebug] = useState(false);
   const [debugText, setDebugText] = useState(''); // This will contain the debug string
   const [isBotTyping, setIsBotTyping] = useState(false);
-  const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
-  const [selectedVersion, setSelectedVersion] = useState('v2');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,29 +48,16 @@ const Chat = () => {
       ]);
       console.log(message)
       setDebugText((prev_text) => message.text.debug);
-      if (isVoiceEnabled) {
-        window.speechSynthesis.cancel();
-
-        // Get available voices
-        const voices = window.speechSynthesis.getVoices();
-
-        // Find a female voice, you can adjust this logic to select specific ones
-        const femaleVoice = voices.find(voice => voice.gender === 'female') || voices.find(voice => voice.name.includes('Female')) || voices[0];
-
-        const utterance = new SpeechSynthesisUtterance(message.text.msg);
-        utterance.voice = femaleVoice;
-        window.speechSynthesis.speak(utterance);
-      }
       setIsBotTyping(false);
     });
-  }, [navigate, isVoiceEnabled]);
+  }, [navigate]);
 
   const sendMessage = (message) => {
     setMessages((prevMessages) => [
       ...prevMessages,
-      { source: 'user', text: message, version: selectedVersion }
+      { source: 'user', text: message }
     ]);
-    socketService.sendMessage({ source: 'user', text: message, version: selectedVersion });
+    socketService.sendMessage({ source: 'user', text: message });
     setIsBotTyping(true);
   };
 
@@ -104,24 +89,10 @@ const Chat = () => {
     navigate('/login'); // Redirect to login page after logout
   };
 
-  const handleVersionChange = (event) => {
-    setSelectedVersion(event.target.value);
-  };
-
-  const handleEdit = () => {
-    window.open("/editor", "_blank");
-  };
-
   const toggleDebugBox = () => {
     setShowDebug(!showDebug);
   };
 
-  const toggleVoice = () => {
-    if (isVoiceEnabled) {
-      window.speechSynthesis.cancel(); // Stop current speech if toggling off
-    }
-    setIsVoiceEnabled(prevState => !prevState);
-  };
 
   return (
     <div className="chat-container">
@@ -131,15 +102,12 @@ const Chat = () => {
           <h1>🤖 ANA-Assistant 🤖</h1>
         </div>
         <div className="header-buttons">
-          <button onClick={handleEdit} className="logout-button">Editor</button>
           <button onClick={toggleDebugBox} className="toggle-debug-button">
             {showDebug ? 'Hide Debug' : 'Show Debug'}
           </button>
           <button onClick={handleLogout} className="logout-button">Logout</button>
           <button onClick={handleDeleteAll} className="logout-button">Clear History</button>
-          <button onClick={toggleVoice} className="logout-button">
-            {isVoiceEnabled ? 'Disable Voice' : 'Enable Voice'}
-          </button>
+
         </div>
       </header>
 
