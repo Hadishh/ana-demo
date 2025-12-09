@@ -1,7 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import permissions, status, generics
-from core.agents import graphiti_agent
+from config.settings.base import NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD
+from neo4j import GraphDatabase
+from .serializers import GraphResponseSerializer
 
 
 class Neo4jGraphView(generics.RetrieveAPIView):
@@ -9,6 +11,7 @@ class Neo4jGraphView(generics.RetrieveAPIView):
 
     def get(self, request: Request, *args, **kwargs):
         limit = int(request.query_params.get("limit", 200))
+        driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 
         def fetch_graph(tx, limit):
 
@@ -53,16 +56,17 @@ class Neo4jGraphView(generics.RetrieveAPIView):
 
             return list(nodes.values()), rels
 
-        with graphiti_agent.driver.session() as session:
+        with driver.session() as session:
             nodes, rels = session.execute_read(fetch_graph, limit)
+        raw_data = {"nodes": nodes, "rels": rels}
+        serilizer = GraphResponseSerializer(raw_data)
+        print(serilizer.data)
 
-        return Response(
-            {"nodes": nodes, "relationships": rels}, status=status.HTTP_200_OK
-        )
+        return Response(serilizer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
-
-        with graphiti_agent.driver.session() as session:
+        driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+        with driver.session() as session:
             session.run("MATCH (n) DETACH DELETE n;")
 
         return Response(
