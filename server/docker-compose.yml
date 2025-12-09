@@ -15,6 +15,7 @@ services:
     depends_on:
       - db
       - redis
+      - neo4j
 
   db:
     image: postgres:13

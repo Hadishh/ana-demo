@@ -3,7 +3,7 @@ import pytz
 import re
 from datetime import datetime
 import asyncio
-
+from graphiti_core.nodes import EpisodeType
 from chat.models import Message
 
 
@@ -15,15 +15,25 @@ class ChatBot:
 
 
     async def answer(self, dialogue):
-        from core.agents import main_agent
+        from core.agents import main_agent, graphiti_agent
         from core.function_calls import tool_map, Executor, functions_references
         curr_exec = Executor(
             tool_registry=tool_map, 
             action_registry={"function_registry": {}}, 
             funcs_ref=functions_references
         )
-        
-        print(dialogue)
+        print(dialogue, f"{self.user.name}: {dialogue[0]['text']}")
+        try:
+            await graphiti_agent.graphiti.add_episode(
+                name=f"new_message:{self.user.name}:{len(dialogue)}",
+                episode_body=f"{self.user.name}: {dialogue[0]['text']}",
+                source=EpisodeType.text,
+                source_description=f"new message from the user",
+                reference_time=datetime.now(),
+            )
+        except Exception as e:
+            print("IGNORING EPISODE: ", f"{self.user.name}: {dialogue[0]['text']}", str(e))
+
         response, log_string = await main_agent.generate_functions_and_responses(
             tool_registry=tool_map, 
             action_registry={"function_registry": {}}, 
