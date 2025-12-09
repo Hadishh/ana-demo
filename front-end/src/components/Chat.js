@@ -140,10 +140,6 @@ const Chat = () => {
           <button onClick={toggleVoice} className="logout-button">
             {isVoiceEnabled ? 'Disable Voice' : 'Enable Voice'}
           </button>
-          <select value={selectedVersion} onChange={handleVersionChange} className="version-select">
-            <option value="v1">Version 1</option>
-            <option value="v2">Version 2</option>
-          </select>
         </div>
       </header>
 
