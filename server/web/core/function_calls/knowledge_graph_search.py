@@ -1,7 +1,8 @@
-
 from langchain.tools import tool
 from langchain_core.utils.function_calling import convert_to_openai_function
 from core.agents import graphiti_agent
+
+
 @tool
 async def graph_search(query):
     """
@@ -34,11 +35,12 @@ async def graph_search(query):
         if edge.name == "IS_DUPLICATE_OF":
             continue
         fine_grained_facts.append(edge.fact)
-    
+
     return "\n".join(fine_grained_facts)
+
 
 func_references = {"graph_search": graph_search}
 
 registry = {
-    f.name : convert_to_openai_function(f, strict=True) for f in func_references.values()
+    f.name: convert_to_openai_function(f, strict=True) for f in func_references.values()
 }
