@@ -120,7 +120,7 @@ const GraphView = () => {
                     color: { inherit: 'from', highlight: '#FFD700' }, // Gold highlight on hover
                     width: 2,
                     arrows: { to: { enabled: true, scaleFactor: 0.5 } },
-                    smooth: { type: 'continuous' },
+                    smooth: { type: 'dynamic' },
                     font: {
                         size: 8, // Smaller font for less clutter
                         color: '#ffffffff', // Light green color for links
