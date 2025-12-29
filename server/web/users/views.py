@@ -1,0 +1,59 @@
+from .models import User
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
+import os
+
+
+class RegisterView(APIView):
+
+    def post(self, request, *args, **kwargs):
+        password = request.data.get("password")
+        username = request.data.get("username")
+        name = request.data.get("name")
+        age = request.data.get("age")
+        city = request.data.get("city")
+        if not password or not username:
+            return Response(
+                {"error": "Please provide username, password"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if User.objects.filter(username=username).exists():
+            return Response(
+                {"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        user = User.objects.create_user(
+            username=username, 
+            password=password,
+            name=name,
+            age=age,
+            city=city
+        )
+        refresh = RefreshToken.for_user(user)
+
+        return Response(
+            {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+        )
+
+
+class LoginView(APIView):
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        user = User.objects.filter(username=username).first()
+        if user is None or not user.check_password(password):
+            return Response(
+                {"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST
+            )
+        refresh = RefreshToken.for_user(user)
+        return Response(
+            {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+        )
